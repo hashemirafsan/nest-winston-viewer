@@ -10,10 +10,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Header, Inject, Query, Res, Req, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Header, Inject, Query, Res, Req, HttpException, HttpStatus, } from '@nestjs/common';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { LogReaderService } from './log-reader.service.js';
+// ✅ ESM-safe __dirname / __filename replacement
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 function checkBasicAuth(req, auth) {
     if (!auth)
         return;
@@ -31,22 +35,22 @@ let LogsController = class LogsController {
     constructor(reader, opts) {
         this.reader = reader;
         this.opts = opts;
-        // Load HTML once; replace __BASE__ token with actual route base
-        const file = join(__dirname, 'viewer.static.html');
-        const raw = readFileSync(file, 'utf8');
+        // ✅ Compute path relative to current file (ESM-safe)
+        const htmlPath = join(__dirname, 'viewer.static.html');
+        const raw = readFileSync(htmlPath, 'utf8');
         this.html = raw.replaceAll('__BASE__', this.opts.routeBase || '/logs');
     }
-    // Viewer UI (GET /logs)
+    // ✅ Viewer UI (GET /logs)
     ui(req, res) {
         checkBasicAuth(req, this.opts.auth);
         res.send(this.html);
     }
-    // GET /logs/api/dates -> ["2025-10-06","2025-10-05",...]
+    // ✅ GET /logs/api/dates
     async dates(req) {
         checkBasicAuth(req, this.opts.auth);
         return this.reader.listAvailableDates(this.opts.filesDir);
     }
-    // GET /logs/api?date=YYYY-MM-DD&q=error&level=error&page=1&pageSize=100
+    // ✅ GET /logs/api?date=YYYY-MM-DD&q=error&level=info&page=1&pageSize=100
     async query(req, q) {
         checkBasicAuth(req, this.opts.auth);
         if (!q?.date) {
