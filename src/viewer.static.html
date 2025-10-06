@@ -27,7 +27,7 @@
         </select>
       </div>
       <div class="md:col-span-2 flex">
-        <input id="q" class="flex-1 border rounded-l-xl px-3 py-2" placeholder="Search message or JSON…"/>
+        <input id="q" class="flex-1 border rounded-l-xl px-3 py-2" placeholder="Search message or JSON…" />
         <button id="searchBtn" class="border rounded-r-xl px-4 py-2 bg-slate-900 text-white">Search</button>
       </div>
     </section>
@@ -51,18 +51,30 @@
   </div>
 
   <script>
-    const base = '__BASE__';
+    // 🧩 Base path injected by Nest controller (e.g. '/logs')
+    let base = '__BASE__';
+
+    // ✅ Sanitize: strip any accidental credentials or origin fragments
+    try {
+      const u = new URL(base, window.location.origin);
+      u.username = '';
+      u.password = '';
+      base = u.pathname.replace(/\/$/, '');
+    } catch (_) {
+      // already relative
+    }
+
     const $ = (id) => document.getElementById(id);
     let page = 1;
 
     const badge = (lvl) =>
-      `<span class="inline-block text-xs px-2 py-0.5 rounded-full border">${(lvl||'').toUpperCase()}</span>`;
+      `<span class="inline-block text-xs px-2 py-0.5 rounded-full border">${(lvl || '').toUpperCase()}</span>`;
 
     function rowHtml(o) {
       const ts = o.timestamp || '';
       const lvl = o.level || '';
       const ctx = o.context ? '[' + o.context + '] ' : '';
-      const msg = (o.message ?? '');
+      const msg = o.message ?? '';
       const meta = JSON.stringify(o.metadata || o, null, 0);
       return `
         <div class="px-4 py-2 grid grid-cols-12 gap-3">
@@ -75,9 +87,10 @@
     }
 
     async function loadDates() {
-      const res = await fetch(base + '/api/dates');
+      const res = await fetch(`${base}/api/dates`);
+      if (!res.ok) throw new Error(`Failed to fetch dates: ${res.status}`);
       const dates = await res.json();
-      $('date').innerHTML = dates.map(d => `<option>${d}</option>`).join('');
+      $('date').innerHTML = dates.map((d) => `<option>${d}</option>`).join('');
       if (dates.length) $('date').value = dates[0];
     }
 
@@ -86,7 +99,7 @@
       const q = $('q').value;
       const level = $('level').value;
       const pageSize = $('pageSize').value;
-      const url = new URL(base + '/api', window.location.origin);
+      const url = new URL(`${base}/api`, window.location.origin);
       url.searchParams.set('date', date);
       if (q) url.searchParams.set('q', q);
       if (level) url.searchParams.set('level', level);
@@ -94,7 +107,9 @@
       url.searchParams.set('pageSize', pageSize);
 
       const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to fetch logs: ${res.status}`);
       const data = await res.json();
+
       $('rows').innerHTML = data.rows.map(rowHtml).join('');
       $('stats').textContent = `Showing ${data.rows.length} of ${data.total} • page ${data.page} (size ${data.pageSize})`;
     }
@@ -106,7 +121,19 @@
     $('level').onchange = () => { page = 1; loadPage(); };
     $('pageSize').onchange = () => { page = 1; loadPage(); };
 
-    (async () => { await loadDates(); await loadPage(); })();
+    (async () => {
+      try {
+        await loadDates();
+        await loadPage();
+      } catch (err) {
+        console.error(err);
+        document.body.innerHTML =
+          `<div class="p-10 text-center text-red-600 font-mono">
+             <p>⚠️ Failed to load logs.</p>
+             <p>${err.message}</p>
+           </div>`;
+      }
+    })();
   </script>
 </body>
 </html>
