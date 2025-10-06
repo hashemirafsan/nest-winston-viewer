@@ -1,11 +1,19 @@
 {
   "name": "nest-winston-viewer",
-  "version": "0.1.1",
+  "description": "A NestJS module for Winston logging with a built-in Tailwind log viewer",
+  "files": ["dist", "README.md"],
+  "keywords": ["nestjs", "winston", "logger", "viewer"],
+  "license": "MIT",
+  "author": "Hashemi Rafsan <rafsanhashemi@gmail.com>",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
   "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hashemirafsan/nest-winston-viewer.git"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",

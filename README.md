@@ -1,3 +1,21 @@
+<p align="center">
+  <a href="https://www.npmjs.com/package/@hashemirafsan/nest-winston-viewer" target="_blank">
+    <img src="https://img.shields.io/npm/v/@hashemirafsan/nest-winston-viewer.svg?style=flat-square" alt="NPM Version" />
+  </a>
+  <a href="https://www.npmjs.com/package/@hashemirafsan/nest-winston-viewer" target="_blank">
+    <img src="https://img.shields.io/npm/dm/@hashemirafsan/nest-winston-viewer.svg?style=flat-square" alt="Downloads" />
+  </a>
+  <a href="https://github.com/hashemirafsan/nest-winston-viewer/actions" target="_blank">
+    <img src="https://img.shields.io/github/actions/workflow/status/hashemirafsan/nest-winston-viewer/build.yml?branch=main&style=flat-square" alt="Build Status" />
+  </a>
+  <a href="https://github.com/hashemirafsan/nest-winston-viewer/blob/main/LICENSE" target="_blank">
+    <img src="https://img.shields.io/npm/l/@hashemirafsan/nest-winston-viewer.svg?style=flat-square" alt="License" />
+  </a>
+  <a href="https://github.com/hashemirafsan/nest-winston-viewer/stargazers" target="_blank">
+    <img src="https://img.shields.io/github/stars/hashemirafsan/nest-winston-viewer?style=social" alt="GitHub Stars" />
+  </a>
+</p>
+
 # nest-winston-viewer
 
 A NestJS module that provides a web-based viewer for Winston logs with daily rotation support.
