@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Logs</title>
+</head>
+<body class="bg-gray-50 text-slate-900">
+  <div class="max-w-7xl mx-auto p-6 space-y-6">
+    <header class="flex items-center justify-between">
+      <h1 class="text-2xl font-semibold">Application Logs</h1>
+      <div class="text-sm text-slate-500">Daily rotated • JSON • Searchable</div>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-5 gap-3">
+      <div class="md:col-span-2">
+        <label class="sr-only" for="date">Date</label>
+        <select id="date" class="w-full border rounded-xl px-3 py-2"></select>
+      </div>
+      <div>
+        <label class="sr-only" for="level">Level</label>
+        <select id="level" class="w-full border rounded-xl px-3 py-2">
+          <option value="">All levels</option>
+          <option>error</option><option>warn</option><option>info</option>
+          <option>http</option><option>verbose</option><option>debug</option><option>silly</option>
+        </select>
+      </div>
+      <div class="md:col-span-2 flex">
+        <input id="q" class="flex-1 border rounded-l-xl px-3 py-2" placeholder="Search message or JSON…"/>
+        <button id="searchBtn" class="border rounded-r-xl px-4 py-2 bg-slate-900 text-white">Search</button>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border bg-white shadow-sm">
+      <div id="stats" class="px-4 py-2 text-sm text-slate-600 border-b">—</div>
+      <div id="rows" class="divide-y text-sm font-mono overflow-auto max-h-[70vh]"></div>
+      <div class="flex items-center justify-between p-3">
+        <div class="space-x-2">
+          <button id="prev" class="px-3 py-1 border rounded-xl">Prev</button>
+          <button id="next" class="px-3 py-1 border rounded-xl">Next</button>
+        </div>
+        <div>
+          <label class="text-sm">Page size</label>
+          <select id="pageSize" class="border rounded-xl px-2 py-1">
+            <option>50</option><option selected>100</option><option>200</option><option>500</option>
+          </select>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const base = '__BASE__';
+    const $ = (id) => document.getElementById(id);
+    let page = 1;
+
+    const badge = (lvl) =>
+      `<span class="inline-block text-xs px-2 py-0.5 rounded-full border">${(lvl||'').toUpperCase()}</span>`;
+
+    function rowHtml(o) {
+      const ts = o.timestamp || '';
+      const lvl = o.level || '';
+      const ctx = o.context ? '[' + o.context + '] ' : '';
+      const msg = (o.message ?? '');
+      const meta = JSON.stringify(o.metadata || o, null, 0);
+      return `
+        <div class="px-4 py-2 grid grid-cols-12 gap-3">
+          <div class="col-span-3 text-slate-500">${ts}</div>
+          <div class="col-span-2">${badge(lvl)}</div>
+          <div class="col-span-7 break-words">${ctx}${msg}
+            <div class="text-slate-500 text-xs">${meta}</div>
+          </div>
+        </div>`;
+    }
+
+    async function loadDates() {
+      const res = await fetch(base + '/api/dates');
+      const dates = await res.json();
+      $('date').innerHTML = dates.map(d => `<option>${d}</option>`).join('');
+      if (dates.length) $('date').value = dates[0];
+    }
+
+    async function loadPage() {
+      const date = $('date').value;
+      const q = $('q').value;
+      const level = $('level').value;
+      const pageSize = $('pageSize').value;
+      const url = new URL(base + '/api', window.location.origin);
+      url.searchParams.set('date', date);
+      if (q) url.searchParams.set('q', q);
+      if (level) url.searchParams.set('level', level);
+      url.searchParams.set('page', page);
+      url.searchParams.set('pageSize', pageSize);
+
+      const res = await fetch(url);
+      const data = await res.json();
+      $('rows').innerHTML = data.rows.map(rowHtml).join('');
+      $('stats').textContent = `Showing ${data.rows.length} of ${data.total} • page ${data.page} (size ${data.pageSize})`;
+    }
+
+    $('searchBtn').onclick = () => { page = 1; loadPage(); };
+    $('prev').onclick = () => { if (page > 1) { page--; loadPage(); } };
+    $('next').onclick = () => { page++; loadPage(); };
+    $('date').onchange = () => { page = 1; loadPage(); };
+    $('level').onchange = () => { page = 1; loadPage(); };
+    $('pageSize').onchange = () => { page = 1; loadPage(); };
+
+    (async () => { await loadDates(); await loadPage(); })();
+  </script>
+</body>
+</html>
