@@ -2,9 +2,9 @@ import {
   Controller, Get, Header, Inject, Query, Res, Req, HttpException, HttpStatus
 } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { LogReaderService } from './log-reader.service';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { LogReaderService } from './log-reader.service.js';
 
 type Options = {
   routeBase: string;

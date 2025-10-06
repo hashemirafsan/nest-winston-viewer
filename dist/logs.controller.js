@@ -11,9 +11,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { Controller, Get, Header, Inject, Query, Res, Req, HttpException, HttpStatus } from '@nestjs/common';
-import { LogReaderService } from './log-reader.service';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { LogReaderService } from './log-reader.service.js';
 function checkBasicAuth(req, auth) {
     if (!auth)
         return;

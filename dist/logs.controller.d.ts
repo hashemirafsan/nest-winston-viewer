@@ -1,5 +1,5 @@
 import { Response, Request } from 'express';
-import { LogReaderService } from './log-reader.service';
+import { LogReaderService } from './log-reader.service.js';
 type Options = {
     routeBase: string;
     filesDir: string;

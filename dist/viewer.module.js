@@ -7,9 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var WinstonViewerModule_1;
 import { Global, Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
-import { buildWinstonTransports } from './logger.factory';
-import { LogsController } from './logs.controller';
-import { LogReaderService } from './log-reader.service';
+import { buildWinstonTransports } from './logger.factory.js';
+import { LogsController } from './logs.controller.js';
+import { LogReaderService } from './log-reader.service.js';
 let WinstonViewerModule = WinstonViewerModule_1 = class WinstonViewerModule {
     static forRoot(options = {}) {
         const { routeBase = '/logs', filesDir = './logs', auth = null, logger = {}, } = options;

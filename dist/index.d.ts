@@ -1,2 +1,2 @@
-export * from './viewer.module';
-export * from './logger.factory';
+export * from './viewer.module.js';
+export * from './logger.factory.js';

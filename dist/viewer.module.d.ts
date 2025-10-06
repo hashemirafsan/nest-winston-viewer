@@ -1,5 +1,5 @@
 import { DynamicModule } from '@nestjs/common';
-import { CreateLoggerOptions } from './logger.factory';
+import { CreateLoggerOptions } from './logger.factory.js';
 export type ViewerModuleOptions = {
     routeBase?: string;
     filesDir?: string;

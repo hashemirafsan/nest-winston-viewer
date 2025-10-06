@@ -1,8 +1,8 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
-import { buildWinstonTransports, CreateLoggerOptions } from './logger.factory';
-import { LogsController } from './logs.controller';
-import { LogReaderService } from './log-reader.service';
+import { buildWinstonTransports, CreateLoggerOptions } from './logger.factory.js';
+import { LogsController } from './logs.controller.js';
+import { LogReaderService } from './log-reader.service.js';
 
 export type ViewerModuleOptions = {
   routeBase?: string; // default '/logs'
